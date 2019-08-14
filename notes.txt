@@ -1,2 +1,2 @@
 // deploy servera na heroku
-git subtree push --prefix pythonapp heroku master
+git subtree push --prefix server heroku master
