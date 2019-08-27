@@ -4,7 +4,7 @@ const mongoose = require('mongoose')
 const axios = require('axios')
 const client = new ThingSpeakClient()
 const router = express.Router()
-const { thingSpeakWriteKey, thingSpeakReadKey, thingSpeakChannelId } = require('../../config/config')
+const { thingSpeakWriteKey } = require('../../config/config')
 require('../../db/mongoDB/models/Measure')
 
 const Measure = mongoose.model('measures')
