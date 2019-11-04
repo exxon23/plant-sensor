@@ -11,7 +11,7 @@ const Measure = mongoose.model('measures')
 
 router.post('/', async (req, res) => {
   try {
-    const { temperature, humidity, moisture, lightIntensity, device } = req.body
+    const { temperature, humidity, moisture, lightIntensity, device, voltage } = req.body
     // const newMeasure = await new Measure({ temperature, humidity, moisture, lightIntensity, device }).save()
     // console.log(`Measure saved to mongoDB with id ${newMeasure._id}`)
     await axios.post(`https://api.thingspeak.com/update?api_key=${thingSpeakWriteKey}&field1=${temperature.value}&field2=${humidity.value}&field3=${moisture.value}&field4=${lightIntensity.value}&field5=${voltage.value}`)
