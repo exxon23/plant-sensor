@@ -1,18 +1,10 @@
 const mongoose = require('mongoose')
 
-const { mongoDBUri } = require('./config')
-
-// Map global promise - get rid of warning
-mongoose.Promise = global.Promise
+const { MONGO_DB_URI } = require('./config')
 
 const connectToMongoose = async () => {
-// Connect to mongoose
-  try {
-    mongoose.connect(mongoDBUri, { useNewUrlParser: true })
-    console.log('\x1b[35m', '[server]', '\x1b[0m', 'MongoDB connected to Mlab database')
-  } catch (err) {
-    console.log('\x1b[35m', '[server]', '\x1b[0m', err)
-  }
+  mongoose.connect(MONGO_DB_URI, { useNewUrlParser: true })
+  console.log('MongoDB connected to Mlab database')
 }
 
 module.exports = connectToMongoose

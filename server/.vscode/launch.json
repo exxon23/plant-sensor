@@ -26,7 +26,7 @@
             "type": "node",
             "request": "launch",
             "name": "Seed",
-            "program": "${workspaceFolder}/seed/index.js",
+            "program": "${workspaceFolder}/src/model/mongoDB/seeds/index.js",
             "envFile": "${workspaceFolder}/.env"
         },
     ]

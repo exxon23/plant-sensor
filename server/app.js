@@ -1,22 +1,18 @@
-const express = require('express')
-const cors = require('cors')
-const bodyParser = require('body-parser')
-const helmet = require('helmet')
-
-const { measure } = require('./api/routes')
-const { port } = require('./config/config')
+const fastify = require('fastify')({ logger: require('./config/logger') })
+const { PORT } = require('./config/config')
+const initRest = require('./src/interfaces/rest')
 const connectMongoose = require('./config/mongoose')
 
-const app = express()
+fastify.register(require('fastify-cors'))
+initRest(fastify)
 
-app.use(cors())
-app.use(helmet())
-app.use(bodyParser.json())
-
-app.use('/measure', measure)
-
-connectMongoose()
-
-app.listen(port, () => {
-  console.log('\x1b[35m', '[server]', '\x1b[0m', `Server started on port ${port}`)
-})
+;(async () => {
+  try {
+    await connectMongoose()
+    await fastify.listen(PORT, '0.0.0.0')
+    fastify.log.info(`Server listening on ${fastify.server.address().port}`)
+  } catch (err) {
+    fastify.log.error(err)
+    process.exit(1)
+  }
+})()
