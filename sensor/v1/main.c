@@ -19,7 +19,7 @@
 #define DEEP_SLEEP_INTERVAL 30e6
 #define DEEP_SLEEP_ENABLED 1
 #define BATTERY_MEASURE_RATIO 4.25
-#define ADC_ERROR 0
+#define ADC_ERROR 10
 #define MIN_VOLTAGE_THRESHOLD 3.3
 #endif
 
@@ -39,6 +39,8 @@ void setup(void) {
     pinMode(BATTERY, OUTPUT);     
     pinMode(ANALOG_SENSOR, OUTPUT);
     pinMode(POWER_SENSOR, OUTPUT); 
+    digitalWrite(POWER_SENSOR, HIGH);
+    digitalWrite(ANALOG_SENSOR, HIGH);
     getBatteryVoltage();
 
     if(calculateAverage(voltage) < MIN_VOLTAGE_THRESHOLD) {
@@ -66,7 +68,7 @@ void setup(void) {
     // WIFI manager
     WiFiManager wifiManager;
     wifiManager.setConfigPortalTimeout(240);
-    wifiManager.resetSettings();
+    // wifiManager.resetSettings();
     if(!wifiManager.autoConnect("plant sensor")) {
         Serial.println("Wi-Fi setup unsuccessful in interval");
         Serial.println("Going into deep sleep");
@@ -107,7 +109,6 @@ float calculateAverage(float data[]) {
     return avg;
 }
 float getBatteryVoltage() {
-    // Serial.println("getBatteryVoltage");
     digitalWrite(BATTERY, LOW);
     delay(50);
     for (uint8_t i = 0; i < MEASURES; i++) {
@@ -155,7 +156,7 @@ void createPayload() {
 
 void sendData() {
     HTTPClient http;
-    http.begin("http://23df12bd.ngrok.io/measure");
+    http.begin("http://plant-sensor-mach.herokuapp.com/measure");
     http.addHeader("Content-Type", "application/json");
     int httpCode = http.POST(JSONmessageBuffer);  // send the request
     String payload = http.getString();  // get response
