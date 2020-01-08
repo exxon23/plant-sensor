@@ -3,6 +3,9 @@ const { PORT } = require('./config/config')
 const initRest = require('./src/interfaces/rest')
 const connectMongoose = require('./config/mongoose')
 
+// run data processer worker
+require('./data_processer')
+
 fastify.register(require('fastify-cors'))
 initRest(fastify)
 

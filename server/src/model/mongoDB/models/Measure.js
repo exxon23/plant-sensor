@@ -4,7 +4,8 @@ const Schema = mongoose.Schema
 const MeasureSchema = new Schema({
   device: {
     type: Schema.Types.ObjectId,
-    ref: 'devices'
+    ref: 'devices',
+    required: true
   },
   processed: {
     type: Boolean,

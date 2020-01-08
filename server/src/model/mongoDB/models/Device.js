@@ -4,14 +4,17 @@ const Schema = mongoose.Schema
 const DeviceSchema = new Schema({
   user: {
     type: Schema.Types.ObjectId,
-    ref: 'users'
+    ref: 'users',
+    default: null
   },
   name: {
-    type: String
+    type: String,
+    default: null
   },
   configuration: {
     type: Schema.Types.ObjectId,
-    ref: 'device_configuration'
+    ref: 'device_configuration',
+    required: true
   },
   active: {
     type: Boolean,

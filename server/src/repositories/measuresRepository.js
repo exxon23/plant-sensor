@@ -9,6 +9,11 @@ const getMeasures = (measure) => {
   return Measure.find({ ...query, createdAt: dateQuery })
 }
 
+const updateMeasure = (measure) => {
+  const { id, ...measureParams } = measure
+  return Measure.findByIdAndUpdate(id, { $set: measureParams })
+}
+
 const deleteMeasure = (measure) => {
   const { id } = measure
   return Measure.findByIdAndDelete(id)
@@ -17,5 +22,6 @@ const deleteMeasure = (measure) => {
 module.exports = {
   saveMeasure,
   getMeasures,
+  updateMeasure,
   deleteMeasure
 }

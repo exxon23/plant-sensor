@@ -29,5 +29,12 @@
             "program": "${workspaceFolder}/src/model/mongoDB/seeds/index.js",
             "envFile": "${workspaceFolder}/.env"
         },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Process data",
+            "program": "${workspaceFolder}/data_processer.js",
+            "envFile": "${workspaceFolder}/.env"
+        },
     ]
 }

@@ -20,7 +20,7 @@ const getMeasures = async (measureParameters) => {
 }
 
 const deleteMeasure = async (measure) => {
-  const result = await measuresRepository.deleteMeasure(measure)
+  await measuresRepository.deleteMeasure(measure)
   return {
     message: 'Measured data successfully deleted',
     measureId: measure.id

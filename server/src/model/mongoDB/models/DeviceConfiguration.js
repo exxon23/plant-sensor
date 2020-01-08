@@ -4,10 +4,16 @@ const Schema = mongoose.Schema
 const DeviceConfigurationSchema = new Schema({
   sensors: [{
     type: Schema.Types.ObjectId,
-    ref: 'sensors'
+    ref: 'sensors',
+    required: true
   }],
   version: {
-    type: String
+    type: String,
+    required: true
+  },
+  type: {
+    type: String,
+    required: true
   }
 }, { timestamps: true })
 

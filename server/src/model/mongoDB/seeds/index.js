@@ -4,21 +4,21 @@ const DeviceConfiguration = require('../models/DeviceConfiguration')
 const Device = require('../models/Device')
 
 // EXAMPLE DATA:
-const sensors = [
-  { name: 'BME280' },
-  { name: 'Moisture sensor v1.2' },
-  { name: 'BH1750' }
-  // { name: 'KY-018' }
-]
-
-const deviceConfigurations = [
-  {
-    version: 'alfa',
-    type: 'plant-sensor'
-  }
-]
 const devices = [
-  { name: 'nodemcu', active: true }
+  {
+    name: 'esp12',
+    active: true,
+    configuration: {
+      version: 'alfa',
+      type: 'plant-sensor'
+    },
+    sensors: [
+      { name: 'BME280' },
+      { name: 'Moisture sensor v1.2' },
+      { name: 'BH1750' }
+      // { name: 'KY-018' }
+    ]
+  }
 ]
 
 const saveSensor = async (sensor) => {
@@ -39,23 +39,19 @@ const saveDevice = async (device) => {
   return newDevice._id
 }
 
-const saveSensors = async () => {
-  for (const sensor of sensors) {
-    const newSensor = await new Sensor(sensor).save()
-    console.log(`Sensor with name ${sensor.name} saved with id ${newSensor._id}`)
-  }
-}
 ;(async () => {
   try {
     await connectMongoose()
-    const sensorsId = await Promise.all(sensors.map(sensor => saveSensor(sensor)))
-    const deviceConfigurationId = await saveDeviceConfiguration({ ...deviceConfigurations, sensors: sensorsId })
-    await saveDevice({ ...devices, configuration: deviceConfigurationId })
+
+    for (const device of devices) {
+      const sensorsId = await Promise.all(device.sensors.map(sensor => saveSensor(sensor)))
+      const deviceConfigurationId = await saveDeviceConfiguration({ ...device.configuration, sensors: sensorsId })
+      await saveDevice({ ...device, configuration: deviceConfigurationId })
+    }
+
     process.exit(0)
   } catch (err) {
     console.error(err)
     process.exit(1)
   }
 })()
-
-module.exports = saveSensors
