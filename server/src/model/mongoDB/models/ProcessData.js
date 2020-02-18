@@ -13,7 +13,7 @@ const ProcessDataSchema = new Schema({
     ref: 'measures',
     required: true
   },
-  data: [{ measure: String, value: Number, unit: String }]
+  data: [{ measure: String, value: Number, units: String }]
 }, { timestamps: true })
 
 module.exports = mongoose.model('process_data', ProcessDataSchema)

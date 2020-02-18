@@ -12,21 +12,28 @@ const processData = async () => {
   let interval
   console.log('Start loading data to process...')
   try {
+    // Get unprocessed measures
     const unProcessedMeasures = await measuresRepository.getMeasures({
       startTime: moment().subtract(1, 'week').toISOString(),
       endTime: moment().toISOString(),
       processed: false })
     const processedMeasures = await Promise.all(unProcessedMeasures.map(async measure => {
-      const device = await devicesRepository.getDevice(measure.device)
-      const configuration = await deviceConfigurationsRepository.getDeviceConfiguration(device.configuration)
-      const processedData = { data: processMeasureBySensorType({ type: configuration.type, measuredData: measure }), device: device.id, measure: measure.id }
-      await processedDataRepository.saveProcessedData(processedData)
-      return measure.id
+      try {
+        // Get device configuration
+        const device = await devicesRepository.getDevice(measure.device)
+        const configuration = await deviceConfigurationsRepository.getDeviceConfiguration(device.configuration)
+        // Process data based on device configuration
+        const processedData = { data: processMeasureBySensorType({ type: configuration.type, measuredData: measure }), device: device.id, measure: measure.id }
+        await processedDataRepository.saveProcessedData(processedData)
+        return measure.id
+      } catch (error) {
+        console.log(error)
+      }
     }))
 
+    // Update all processed measures
     await Promise.all(processedMeasures.map(id => measuresRepository.updateMeasure({ id, processed: true })))
-
-    console.log(`${unProcessedMeasures.length} measures processed`)
+    console.log(`${processedMeasures.length} measures processed`)
   } catch (err) {
     console.log(err)
     clearTimeout(interval)

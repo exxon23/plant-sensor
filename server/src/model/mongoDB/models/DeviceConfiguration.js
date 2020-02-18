@@ -14,7 +14,8 @@ const DeviceConfigurationSchema = new Schema({
   type: {
     type: String,
     required: true
-  }
+  },
+  settings: {}
 }, { timestamps: true })
 
 module.exports = mongoose.model('device_configurations', DeviceConfigurationSchema)
