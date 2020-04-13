@@ -23,7 +23,12 @@ const processData = async () => {
         const device = await devicesRepository.getDevice(measure.device)
         const configuration = await deviceConfigurationsRepository.getDeviceConfiguration(device.configuration._id)
         // Process data based on device configuration
-        const processedData = { data: processMeasureBySensorType({ type: configuration.type, measuredData: measure }), device: device.id, measure: measure.id }
+        const processedData = {
+          data: processMeasureBySensorType({ type: configuration.type, measuredData: measure }),
+          device: device.id,
+          measure: measure.id,
+          createdAt: measure.createdAt
+        }
         await processedDataRepository.saveProcessedData(processedData)
         return measure.id
       } catch (error) {
