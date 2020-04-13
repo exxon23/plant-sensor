@@ -4,9 +4,9 @@ const saveProcessedData = (data) =>
   new ProcessData(data).save()
 
 const getProcessedData = (measure) => {
-  const { startTime, endTime, sensor } = measure
+  const { startTime, endTime, device } = measure
   const dateQuery = { $gte: startTime, $lt: endTime }
-  return ProcessData.find({ sensor, createdAt: dateQuery })
+  return ProcessData.find({ device, createdAt: dateQuery })
 }
 
 module.exports = {

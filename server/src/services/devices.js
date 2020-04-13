@@ -19,7 +19,7 @@ const getDevices = async (deviceParameters) => {
 const getDevice = async (deviceParameters) => {
   const { id } = deviceParameters
   const device = await devicesRepository.getDevice(id)
-  const configuration = await deviceConfigurationsRepository.getDeviceConfiguration(device.configuration) // TODO: test
+  const configuration = await deviceConfigurationsRepository.getDeviceConfiguration({ id: device.configuration }) // TODO: test
   const sensors = await Promise.all(configuration.sensors.map(sensor => sensorsRepository.getSensor(sensor)))
   return { ...device._doc, configuration: configuration._doc, sensors: sensors.map(sensor => sensor._doc) }
 }

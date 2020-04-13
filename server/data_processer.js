@@ -21,7 +21,7 @@ const processData = async () => {
       try {
         // Get device configuration
         const device = await devicesRepository.getDevice(measure.device)
-        const configuration = await deviceConfigurationsRepository.getDeviceConfiguration(device.configuration)
+        const configuration = await deviceConfigurationsRepository.getDeviceConfiguration({ id: device.configuration })
         // Process data based on device configuration
         const processedData = { data: processMeasureBySensorType({ type: configuration.type, measuredData: measure }), device: device.id, measure: measure.id }
         await processedDataRepository.saveProcessedData(processedData)
@@ -50,8 +50,13 @@ const processMeasureBySensorType = ({ type, measuredData }) => {
         if (measure === 'temperature') result.push({ measure, value: Math.round(value), units: '°C' })
         else if (measure === 'humidity') result.push({ measure, value: Math.round(value), units: '%' })
         else if (measure === 'lightIntensity') result.push({ measure, value: Math.round(value), units: 'lux' })
-        else if (measure === 'soilMoisture') result.push({ measure, value: Math.round(value / 1024 * 100), units: '%' })
-        else if (measure === 'voltage') result.push({ measure, value: Math.round((value - 3.3) / 0.9 * 100), units: '%' })
+        else if (measure === 'soilMoisture') {
+          const calculatedValue = Math.round(value / 1024 * 100)
+          result.push({ measure, value: calculatedValue > 100 ? 100 : calculatedValue, units: '%' })
+        } else if (measure === 'voltage') {
+          const calculatedValue = Math.round((value - 3.3) / 0.9 * 100)
+          result.push({ measure, value: calculatedValue > 100 ? 100 : calculatedValue, units: '%' })
+        }
       })
       break
 

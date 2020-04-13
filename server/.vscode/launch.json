@@ -36,5 +36,12 @@
             "program": "${workspaceFolder}/data_processer.js",
             "envFile": "${workspaceFolder}/.env"
         },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Watering monitor",
+            "program": "${workspaceFolder}/watering_monitor.js",
+            "envFile": "${workspaceFolder}/.env"
+        },
     ]
 }
