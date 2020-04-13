@@ -51,7 +51,7 @@ const processMeasureBySensorType = ({ type, measuredData }) => {
         else if (measure === 'humidity') result.push({ measure, value: Math.round(value), units: '%' })
         else if (measure === 'lightIntensity') result.push({ measure, value: Math.round(value), units: 'lux' })
         else if (measure === 'soilMoisture') {
-          const calculatedValue = Math.round(value / 1024 * 100)
+          const calculatedValue = 100 - Math.round(value / 1024 * 100)
           result.push({ measure, value: calculatedValue > 100 ? 100 : calculatedValue, units: '%' })
         } else if (measure === 'voltage') {
           const calculatedValue = Math.round((value - 3.3) / 0.9 * 100)

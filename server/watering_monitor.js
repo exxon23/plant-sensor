@@ -7,7 +7,7 @@ const eventsRepository = require('./src/repositories/eventsRepository')
 const connectToMongoose = require('./config/mongoose')
 
 const INTERVAL = 20 * 60 * 1000 // 20 minutes
-const WATERING_THRESHOLD = -8 // value of min difference which means watering
+const WATERING_THRESHOLD = 8 // value of min difference which means watering
 
 const processData = async () => {
   let interval
@@ -58,7 +58,7 @@ const processData = async () => {
           }
         }
 
-        const peaks = diff.filter(d => d.value < WATERING_THRESHOLD)
+        const peaks = diff.filter(d => d.value > WATERING_THRESHOLD)
 
         if (peaks.length) {
           console.log(`Find ${peaks.length} watering events for device ${device.id}`)
