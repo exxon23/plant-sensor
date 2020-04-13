@@ -5,6 +5,7 @@ const connectMongoose = require('./config/mongoose')
 
 // run data processer worker
 require('./data_processer')
+require('./watering_monitor')
 
 fastify.register(require('fastify-cors'))
 initRest(fastify)
