@@ -11,7 +11,7 @@ const WATERING_THRESHOLD = 8 // value of min difference which means watering
 
 const processData = async () => {
   let interval
-  console.log('Start loading data to process...')
+  console.log('Start loading data to for watering monitor...')
   try {
     // Find device configuration for "plant-sensor"
     const configuration = await deviceConfigurationsRepository.getDeviceConfiguration({ type: 'plant-sensor' })

@@ -43,5 +43,12 @@
             "program": "${workspaceFolder}/watering_monitor.js",
             "envFile": "${workspaceFolder}/.env"
         },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Insert plants",
+            "program": "${workspaceFolder}/src/model/mongoDB/seeds/insertPlants.js",
+            "envFile": "${workspaceFolder}/.env"
+        }
     ]
 }

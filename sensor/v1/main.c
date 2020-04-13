@@ -8,27 +8,18 @@
 #include <ESP8266HTTPClient.h>
 #include <WiFiManager.h>  
 
-#ifndef STASSID
-#define STASSID "MKSH_NET"
-#define STAPSK  "Bezdomovcibrno1"
 #define BATTERY D7
 #define ANALOG_SENSOR D6
 #define POWER_SENSOR D5
 #define MEASURES 3
-#define DELAY_BETWEEN_MEASURES 100
-#define DEEP_SLEEP_INTERVAL 30e6
+#define DELAY_BETWEEN_MEASURES 200
+#define DEEP_SLEEP_INTERVAL 600e6
 #define DEEP_SLEEP_ENABLED 1
 #define BATTERY_MEASURE_RATIO 4.25
-#define ADC_ERROR 10
 #define MIN_VOLTAGE_THRESHOLD 3.3
-#endif
 
-const char* ssid = STASSID;
-const char* password = STAPSK;
 Adafruit_BME280 bme;
-BH1750 lightMeter(0x23);
-
-
+BH1750 lightSensor(0x23);
 
 // local variables
 float temperature[MEASURES], humidity[MEASURES], soilMoisture[MEASURES], lightIntensity[MEASURES], voltage[MEASURES];
@@ -56,10 +47,16 @@ void setup(void) {
     digitalWrite(ANALOG_SENSOR, LOW);
     delay(50);
     bme.begin(0x76);
-    if (!lightMeter.begin(BH1750::CONTINUOUS_HIGH_RES_MODE)) {
+    if (!lightSensor.begin()) {
         Serial.println(F("Error initialising BH1750"));
     }
-    
+    lightSensor.readLightLevel();
+}
+
+void loop(void) {    
+    // Serial.println("Ligh");
+    // Serial.println(lightSensor.readLightLevel());
+    delay(200);
     Serial.println("Calculating averages and creating request payload ...");
     measureData();
     createPayload();
@@ -67,7 +64,7 @@ void setup(void) {
 
     // WIFI manager
     WiFiManager wifiManager;
-    wifiManager.setConfigPortalTimeout(240);
+    wifiManager.setConfigPortalTimeout(240);    // number of seconds in access point mode
     // wifiManager.resetSettings();
     if(!wifiManager.autoConnect("plant sensor")) {
         Serial.println("Wi-Fi setup unsuccessful in interval");
@@ -84,20 +81,24 @@ void setup(void) {
     }
 }
 
-void loop(void) {
-}
-
 float measureTemperature() {
+    Serial.println("measureTemperature");
+    Serial.println(bme.readTemperature());
     return bme.readTemperature();
 }
 float measureHumidity() {
     return bme.readHumidity();
 }
 float measureSoilMoisture() {
-    return analogRead(A0);
+    int adcValue = analogRead(A0);
+    Serial.println("measureSoilMoisture");
+    Serial.println(adcValue);
+    return (-0.0906 + 0.00106*adcValue - 0.0000000176*adcValue*adcValue);
 }
 float measureLightIntensity() {
-    return lightMeter.readLightLevel();
+    Serial.println("measureLightIntensity");
+    Serial.println(lightSensor.readLightLevel());
+    return lightSensor.readLightLevel();
 }
 float calculateAverage(float data[]) {
     int i = 0;
@@ -112,9 +113,12 @@ float getBatteryVoltage() {
     digitalWrite(BATTERY, LOW);
     delay(50);
     for (uint8_t i = 0; i < MEASURES; i++) {
-        // Serial.println("ADC battery value");
-        int adcValue = analogRead(A0) - ADC_ERROR;
-        // Serial.println(adcValue);
+        Serial.println("ADC battery value");
+        int adcValue = analogRead(A0);
+        Serial.println(adcValue);
+        // float realAdcValue = -0.0906 + 0.00106*adcValue - 0.0000000176*adcValue*adcValue;
+        // Serial.println("Voltage real level");
+        // Serial.print(realAdcValue);
         // Serial.println((float)adcValue/1024 * BATTERY_MEASURE_RATIO);
         voltage[i] = (float)adcValue/1024 * BATTERY_MEASURE_RATIO;
         delay(DELAY_BETWEEN_MEASURES);

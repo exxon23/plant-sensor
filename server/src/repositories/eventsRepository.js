@@ -1,14 +1,14 @@
-const Events = require('../model/mongoDB/models/Events')
+const Event = require('../model/mongoDB/models/Event')
 
 const save = (event) =>
-  new Events(event).save()
+  new Event(event).save()
 
 const getOne = (event) => {
-  return Events.findOne(event)
+  return Event.findOne(event)
 }
 
 const getMany = (event) => {
-  return Events.find(event)
+  return Event.find(event)
 }
 
 module.exports = {
