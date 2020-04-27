@@ -1,4 +1,4 @@
-const { saveMeasure, getMeasures } = require('../../../services/measures')
+const { saveMeasure } = require('../../../services/measures')
 
 async function routes (fastify, options) {
   fastify.route({
@@ -20,51 +20,16 @@ async function routes (fastify, options) {
     },
     handler: async (request, reply) => {
       try {
-        const result = await saveMeasure(request.body)
-        return reply.send(result)
-      } catch (err) {
-        return reply.send(err)
-      }
-    }
-  })
+        const measure = request.body
+        const measureId = await saveMeasure(measure)
 
-  fastify.route({
-    method: 'GET',
-    url: '/measure',
-    tags: ['measure'],
-    schema: {
-      query: {
-        device: { type: 'string' },
-        processed: { type: 'boolean' },
-        startTime: { type: 'string', format: 'date-time' },
-        endTime: { type: 'string', format: 'date-time' }
-      }
-    },
-    handler: async (request, reply) => {
-      try {
-        const result = await getMeasures(request.query)
-        return reply.send(result)
+        return reply.send({
+          message: 'Measured data successfully saved',
+          measureId
+        })
       } catch (err) {
-        return reply.send(err)
-      }
-    }
-  })
-
-  fastify.route({
-    method: 'DELETE',
-    url: '/measure/:id',
-    tags: ['measure'],
-    schema: {
-      params: {
-        id: { type: 'string' }
-      }
-    },
-    handler: async (request, reply) => {
-      try {
-        const result = await getMeasures(request.params)
-        return reply.send(result)
-      } catch (err) {
-        return reply.send(err)
+        if (err.isBoom) return reply.code(err.response.code).send(err.message)
+        return reply.code(500).send(err.message)
       }
     }
   })

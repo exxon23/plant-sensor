@@ -2,7 +2,42 @@ const { updateDevice, getDevice, getDevices } = require('../../../services/devic
 
 async function routes (fastify, options) {
   fastify.route({
-    method: 'PUT',
+    method: 'GET',
+    url: '/devices',
+    tags: ['devices', 'api'],
+    handler: async (request, reply) => {
+      try {
+        const devices = await getDevices()
+        return reply.send(devices)
+      } catch (err) {
+        if (err.isBoom) return reply.code(err.response.code).send(err.message)
+        return reply.code(500).send(err.message)
+      }
+    }
+  })
+
+  fastify.route({
+    method: 'GET',
+    url: '/devices/:id',
+    tags: ['devices'],
+    schema: {
+      params: {
+        id: { type: 'string' }
+      }
+    },
+    handler: async (request, reply) => {
+      try {
+        const device = await getDevice(request.params)
+        return reply.send(device)
+      } catch (err) {
+        if (err.isBoom) return reply.code(err.response.code).send(err.message)
+        return reply.code(500).send(err.message)
+      }
+    }
+  })
+
+  fastify.route({
+    method: 'PATCH',
     url: '/devices/:id',
     tags: ['devices'],
     schema: {
@@ -11,56 +46,25 @@ async function routes (fastify, options) {
         properties: {
           user: { type: 'string' },
           name: { type: 'string' },
-          active: { type: 'string' }
+          active: { type: 'boolean' },
+          // address: { type: 'object'}
+          metadata: { type: 'object' }
         }
       }
     },
     handler: async (request, reply) => {
       try {
-        const result = await updateDevice(request.body)
-        return reply.send(result)
-      } catch (err) {
-        return reply.send(err)
-      }
-    }
-  })
+        const deviceId = request.params.id
+        const deviceParams = request.body
+        await updateDevice({ id: deviceId, ...deviceParams })
 
-  fastify.route({
-    method: 'GET',
-    url: '/devices',
-    tags: ['measure'],
-    schema: {
-      query: {
-        user: { type: 'string' },
-        name: { type: 'string' },
-        active: { type: 'boolean' }
-      }
-    },
-    handler: async (request, reply) => {
-      try {
-        const result = await getDevices(request.query)
-        return reply.send(result)
+        return reply.send({
+          message: 'Device successfully updated',
+          deviceId
+        })
       } catch (err) {
-        return reply.send(err)
-      }
-    }
-  })
-
-  fastify.route({
-    method: 'GET',
-    url: '/devices/:id',
-    tags: ['measure'],
-    schema: {
-      params: {
-        id: { type: 'string' }
-      }
-    },
-    handler: async (request, reply) => {
-      try {
-        const result = await getDevice(request.params)
-        return reply.send(result)
-      } catch (err) {
-        return reply.send(err)
+        if (err.isBoom) return reply.code(err.response.code).send(err.message)
+        return reply.code(500).send(err.message)
       }
     }
   })

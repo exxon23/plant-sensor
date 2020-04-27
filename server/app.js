@@ -1,14 +1,26 @@
 const fastify = require('fastify')({ logger: require('./config/logger') })
-const { PORT } = require('./config/config')
+const { PORT, RUN_WORKERS } = require('./config/config')
 const initRest = require('./src/interfaces/rest')
 const connectMongoose = require('./config/mongoose')
 
-// run data processer worker
-require('./data_processer')
-require('./watering_monitor')
+if (RUN_WORKERS) {
+  // run data processer worker
+  require('./workers/dataProcesser')
+  require('./workers/plantSensors/statusMonitor')
+  require('./workers/plantSensors/wateringMonitor')
+}
 
 fastify.register(require('fastify-cors'))
+fastify.register(require('fastify-swagger'), require('./config/swagger'))
+
 initRest(fastify)
+
+fastify.ready(err => {
+  if (err) throw err
+  fastify.swagger()
+})
+
+fastify.register(require('fastify-boom'))
 
 ;(async () => {
   try {

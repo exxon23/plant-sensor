@@ -1,24 +1,27 @@
+const mongoose = require('mongoose')
+
 const Device = require('../model/mongoDB/models/Device')
 
-const saveDevice = (device) =>
+const save = (device) =>
   new Device(device).save()
 
-const getDevices = (device) => {
+const getMany = (device = {}) => {
   return Device.find(device)
 }
 
-const getDevice = (deviceId) => {
-  return Device.findById(deviceId)
+const getOne = (deviceId) => {
+  if (mongoose.Types.ObjectId.isValid(deviceId)) return Device.findById(deviceId)
+  else return undefined
 }
 
-const updateDevice = (device) => {
+const update = (device) => {
   const { id, ...deviceParams } = device
   return Device.findByIdAndUpdate(id, { $set: deviceParams })
 }
 
 module.exports = {
-  saveDevice,
-  getDevices,
-  getDevice,
-  updateDevice
+  save,
+  getMany,
+  getOne,
+  update
 }

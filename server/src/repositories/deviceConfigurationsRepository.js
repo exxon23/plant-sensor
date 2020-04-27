@@ -1,13 +1,13 @@
 const DeviceConfiguration = require('../model/mongoDB/models/DeviceConfiguration')
 
-const saveDeviceConfiguration = (configuration) =>
+const save = (configuration) =>
   new DeviceConfiguration(configuration).save()
 
-const getDeviceConfiguration = (configuration) => {
+const getOne = (configuration) => {
   return DeviceConfiguration.findOne(configuration)
 }
 
 module.exports = {
-  saveDeviceConfiguration,
-  getDeviceConfiguration
+  save,
+  getOne
 }

@@ -1,10 +1,10 @@
 const moment = require('moment')
 
-const devicesRepository = require('./src/repositories/devicesRepository')
-const deviceConfigurationsRepository = require('./src/repositories/deviceConfigurationsRepository')
-const processedDataRepository = require('./src/repositories/processedDataRepository')
-const eventsRepository = require('./src/repositories/eventsRepository')
-const connectToMongoose = require('./config/mongoose')
+const devicesRepository = require('../../src/repositories/devicesRepository')
+const deviceConfigurationsRepository = require('../../src/repositories/deviceConfigurationsRepository')
+const processedDataRepository = require('../../src/repositories/processedDataRepository')
+const eventsRepository = require('../../src/repositories/eventsRepository')
+const connectToMongoose = require('../../config/mongoose')
 
 const INTERVAL = 20 * 60 * 1000 // 20 minutes
 const WATERING_THRESHOLD = 8 // value of min difference which means watering
@@ -14,15 +14,15 @@ const processData = async () => {
   console.log('Start loading data to for watering monitor...')
   try {
     // Find device configuration for "plant-sensor"
-    const configuration = await deviceConfigurationsRepository.getDeviceConfiguration({ type: 'plant-sensor' })
+    const configuration = await deviceConfigurationsRepository.getOne({ type: 'plant-sensor' })
     // Find devices with this configuration
-    const devices = await devicesRepository.getDevices({ configuration: configuration.id })
+    const devices = await devicesRepository.getMany({ configuration: configuration.id })
 
     const lastWeekDays = [...new Array(7)].map((e, idx) => moment().subtract(idx + 1, 'days'))
 
     for (const device of devices) {
       let wateringMonitorActive
-      const data = await processedDataRepository.getProcessedData({
+      const data = await processedDataRepository.getMany({
         startTime: moment().subtract(1, 'week').toISOString(),
         endTime: moment().toISOString(),
         device: device.id

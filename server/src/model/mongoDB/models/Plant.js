@@ -26,4 +26,6 @@ const PlantSchema = new Schema({
   image: { type: String, required: true }
 }, { timestamps: true })
 
+PlantSchema.index({ displayName: 'text', alias: 'text', category: 'text' })
+
 module.exports = mongoose.model('plants', PlantSchema)

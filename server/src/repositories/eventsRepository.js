@@ -8,7 +8,7 @@ const getOne = (event) => {
 }
 
 const getMany = (event) => {
-  return Event.find(event)
+  return Event.find(event).sort({ time: -1 })
 }
 
 module.exports = {

@@ -11,8 +11,12 @@ const getMany = (plant) => {
   return Plant.find(plant)
 }
 
+const searchByName = (name) =>
+  Plant.find({ $text: { $search: name } }, 'id alias displayName category')
+
 module.exports = {
   save,
   getOne,
-  getMany
+  getMany,
+  searchByName
 }

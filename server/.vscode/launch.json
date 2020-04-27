@@ -25,22 +25,15 @@
         {
             "type": "node",
             "request": "launch",
-            "name": "Seed",
-            "program": "${workspaceFolder}/src/model/mongoDB/seeds/index.js",
+            "name": "Run data process worker",
+            "program": "${workspaceFolder}/workers/dataProcesser",
             "envFile": "${workspaceFolder}/.env"
         },
         {
             "type": "node",
             "request": "launch",
-            "name": "Process data",
-            "program": "${workspaceFolder}/data_processer.js",
-            "envFile": "${workspaceFolder}/.env"
-        },
-        {
-            "type": "node",
-            "request": "launch",
-            "name": "Watering monitor",
-            "program": "${workspaceFolder}/watering_monitor.js",
+            "name": "Run watering monitor worker",
+            "program": "${workspaceFolder}/workers/plantSensors/wateringMonitor",
             "envFile": "${workspaceFolder}/.env"
         },
         {
@@ -48,6 +41,13 @@
             "request": "launch",
             "name": "Insert plants",
             "program": "${workspaceFolder}/src/model/mongoDB/seeds/insertPlants.js",
+            "envFile": "${workspaceFolder}/.env"
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Run status monitor worker",
+            "program": "${workspaceFolder}/workers/plantSensors/statusMonitor",
             "envFile": "${workspaceFolder}/.env"
         }
     ]

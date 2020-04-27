@@ -19,7 +19,8 @@ const DeviceSchema = new Schema({
   active: {
     type: Boolean,
     default: false
-  }
+  },
+  metadata: {}
 
 }, { timestamps: true })
 
