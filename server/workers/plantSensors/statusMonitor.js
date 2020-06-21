@@ -128,12 +128,12 @@ const processData = async () => {
         remainingDays
       }
       // Create status monitor state
-      const previousStatusMonitorState = device._doc.metadata && device._doc.metadata.status && device._doc.metadata.status.statusMonitor && device._doc.metadata.status.statusMonitor.active
+      const previousStatusMonitorState = device._doc.metadata && device._doc.metadata.statusMonitor && device._doc.metadata.statusMonitor.active
       let statusMonitorState = previousStatusMonitorState
       let statusMonitorStartTime = null
 
       if (previousStatusMonitorState) {
-        statusMonitorStartTime = device._doc.metadata.status.statusMonitor.startTime
+        statusMonitorStartTime = device._doc.metadata.statusMonitor.startTime
         if (!statusMonitorActive.lastWeek) {
           // Sensor not active, change status monitor from active -> inactive
           statusMonitorStartTime = null
@@ -155,7 +155,7 @@ const processData = async () => {
         statusMonitor,
         battery
       }
-      await devicesRepository.update({ id: device.id, metadata: newDeviceMetadata })
+      await devicesRepository.update({ id: device.id, metadata: { ...device._doc.metadata, ...newDeviceMetadata } })
     }
   } catch (err) {
     console.log(err)

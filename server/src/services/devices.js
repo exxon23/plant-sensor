@@ -3,14 +3,31 @@ const Boom = require('boom')
 const sensorsRepository = require('../repositories/sensorsRepository')
 const devicesRepository = require('../repositories/devicesRepository')
 const deviceConfigurationsRepository = require('../repositories/deviceConfigurationsRepository')
+const plantsRepository = require('../repositories/plantsRepository')
 
 const getDevices = async (deviceParameters) => {
   const devices = await devicesRepository.getMany(deviceParameters)
+
+  for (const device of devices) {
+    const plant = await plantsRepository.getOne(device._doc.metadata.plant)
+    device.plant = plant
+  }
 
   return devices.map(device => ({
     id: device._doc._id,
     name: device._doc.name,
     active: device._doc.active,
+    plant: {
+      id: device.plant._id,
+      displayName: device.plant._doc.displayName,
+      image: device.plant._doc.image,
+      category: device.plant._doc.category,
+      temperature: device.plant._doc.temperature,
+      humidity: device.plant._doc.humidity,
+      lightIntensity: device.plant._doc.lightIntensity,
+      soilMoisture: device.plant._doc.soilMoisture,
+      notes: device.plant._doc.notes
+    },
     metadata: device._doc.metadata
   }))
 }
@@ -23,9 +40,8 @@ const getDevice = async (deviceParameters) => {
 
   return {
     id: device._doc._id,
-    userId: device._doc.user,
-    active: device._doc.active,
     name: device._doc.name,
+    active: device._doc.active,
     metadata: device._doc.metadata,
     configuration: {
       id: configuration._doc._id,
@@ -41,10 +57,17 @@ const getDevice = async (deviceParameters) => {
 }
 
 const updateDevice = async (device) => {
-  const { id, ...deviceParams } = device
+  const { id, plant, ...deviceParams } = device
+  const deviceFromDb = await await devicesRepository.getOne(id)
 
-  if (!await devicesRepository.getOne(id)) {
+  if (!deviceFromDb) {
     throw Boom.notFound(`Device with id ${id} not found`)
+  }
+
+  if (plant) {
+    const plantExist = await plantsRepository.getOne(plant)
+    if (!plantExist) throw Boom.notFound(`Plant with id ${id} not found`)
+    deviceParams.metadata = { ...deviceFromDb._doc.metadata, plant }
   }
 
   // TODO: if update user -> check if user exist

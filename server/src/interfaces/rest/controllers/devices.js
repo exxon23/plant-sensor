@@ -1,6 +1,13 @@
 const { updateDevice, getDevice, getDevices } = require('../../../services/devices')
+const { authBearer } = require('../../../utils/auth')
 
 async function routes (fastify, options) {
+  // fastify.register(require('fastify-bearer-auth'), {
+  //   auth: async (token, req) => {
+  //     return await authBearer(fastify, token, req)
+  //   }
+  // })
+
   fastify.route({
     method: 'GET',
     url: '/devices',
@@ -47,9 +54,11 @@ async function routes (fastify, options) {
           user: { type: 'string' },
           name: { type: 'string' },
           active: { type: 'boolean' },
+          plant: { type: 'string' }
           // address: { type: 'object'}
-          metadata: { type: 'object' }
-        }
+        },
+        required: ['name', 'active', 'plant']
+
       }
     },
     handler: async (request, reply) => {
