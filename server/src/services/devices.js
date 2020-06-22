@@ -17,6 +17,7 @@ const getDevices = async (deviceParameters) => {
 
   return devices.map(device => {
     if (device._doc.metadata && device._doc.metadata.plant) delete device._doc.metadata.plant
+    if (!device._doc.metadata || device._doc.metadata.plant) return undefined
 
     return {
       id: device._doc._id,
@@ -38,7 +39,7 @@ const getDevices = async (deviceParameters) => {
       } : null,
       metadata: device._doc.metadata || null
     }
-  })
+  }).filter(Boolean)
 }
 
 const getDevice = async (deviceParameters) => {

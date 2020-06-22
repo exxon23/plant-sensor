@@ -9,7 +9,16 @@ const getMany = (measure) => {
   return ProcessData.find({ device, createdAt: dateQuery })
 }
 
+const getMeasureQuantityData = (measure, measureQuantity) => {
+  const { startTime, endTime, device } = measure
+  const dateQuery = { $gte: startTime, $lt: endTime }
+  return ProcessData
+    .find({ device, createdAt: dateQuery, 'data.measure': measureQuantity }, 'createdAt data.measure data.value')
+    .lean()
+}
+
 module.exports = {
   save,
-  getMany
+  getMany,
+  getMeasureQuantityData
 }

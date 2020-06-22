@@ -13,14 +13,15 @@ async function routes (fastify, options) {
       },
       query: {
         startTime: { type: 'string', format: 'date-time' },
-        endTime: { type: 'string', format: 'date-time' }
+        endTime: { type: 'string', format: 'date-time' },
+        measuredQuantity: { type: 'string', enum: ['temperature', 'lightIntensity', 'soilMoisture', 'humidity'] }
       }
     },
     handler: async (request, reply) => {
       try {
         const deviceId = request.params.id
-        const { startTime = moment().subtract(1, 'day').toISOString(), endTime = moment().toISOString() } = request.query
-        const result = await getProcessedData({ deviceId, startTime, endTime })
+        const { startTime = moment().subtract(1, 'day').toISOString(), endTime = moment().toISOString(), measuredQuantity } = request.query
+        const result = await getProcessedData({ deviceId, startTime, endTime, measuredQuantity })
 
         return reply.send(result)
       } catch (err) {
