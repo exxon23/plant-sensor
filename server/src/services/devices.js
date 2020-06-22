@@ -9,27 +9,36 @@ const getDevices = async (deviceParameters) => {
   const devices = await devicesRepository.getMany(deviceParameters)
 
   for (const device of devices) {
-    const plant = await plantsRepository.getOne(device._doc.metadata.plant)
-    device.plant = plant
+    if (device._doc.metadata && device._doc.metadata.plant) {
+      const plant = await plantsRepository.getOne(device._doc.metadata.plant)
+      device.plant = plant
+    }
   }
 
-  return devices.map(device => ({
-    id: device._doc._id,
-    name: device._doc.name,
-    active: device._doc.active,
-    plant: {
-      id: device.plant._id,
-      displayName: device.plant._doc.displayName,
-      image: device.plant._doc.image,
-      category: device.plant._doc.category,
-      temperature: device.plant._doc.temperature,
-      humidity: device.plant._doc.humidity,
-      lightIntensity: device.plant._doc.lightIntensity,
-      soilMoisture: device.plant._doc.soilMoisture,
-      notes: device.plant._doc.notes
-    },
-    metadata: device._doc.metadata
-  }))
+  return devices.map(device => {
+    if (device._doc.metadata && device._doc.metadata.plant) delete device._doc.metadata.plant
+
+    return {
+      id: device._doc._id,
+      name: device._doc.name,
+      active: device._doc.active,
+      plant: device.plant ? {
+        id: device.plant._id,
+        displayName: device.plant._doc.displayName,
+        image: device.plant._doc.image,
+        category: device.plant._doc.category,
+        temperature: device.plant._doc.temperature,
+        humidity: device.plant._doc.humidity,
+        lightIntensity: device.plant._doc.lightIntensity,
+        soilMoisture: device.plant._doc.soilMoisture,
+        notes: device.plant._doc.notes.map(note => ({
+          item: note._doc.item,
+          description: note._doc.description
+        }))
+      } : null,
+      metadata: device._doc.metadata || null
+    }
+  })
 }
 
 const getDevice = async (deviceParameters) => {
