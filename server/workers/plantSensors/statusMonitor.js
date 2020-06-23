@@ -96,7 +96,26 @@ const processData = async () => {
         },
         units: preparedData.humidity.units
       }
-      // Calculate asoil moisture averages
+      // Calculate light intensity averages
+      const filteredDaysData = preparedData.lightIntensity.data.filter(({ value, time }) => {
+        const hour = moment(time).hour()
+        return hour < 20 && hour > 7
+      })
+      const lightIntensity = {
+        average: {
+          lastWeek: statusMonitorActive.lastWeek
+            ? calculateAverage(getDataFromInterval(filteredDaysData, { startTime: moment().subtract(1, 'week'), endTime: moment() }))
+            : null,
+          lastTwoWeeks: statusMonitorActive.lastTwoWeeks
+            ? calculateAverage(getDataFromInterval(filteredDaysData, { startTime: moment().subtract(2, 'weeks'), endTime: moment() }))
+            : null,
+          last30Days: statusMonitorActive.last30Days
+            ? calculateAverage(filteredDaysData)
+            : null
+        },
+        units: preparedData.lightIntensity.units
+      }
+      // Calculate soil moisture averages
       const lastWateringEvents = await eventsRepository.getMany({ type: 'watering' })
       const soilMoisture = {
         average: {
@@ -152,6 +171,7 @@ const processData = async () => {
         temperature,
         humidity,
         soilMoisture,
+        lightIntensity,
         statusMonitor,
         battery
       }
